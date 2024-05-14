@@ -106,6 +106,13 @@ class GenerateMaze:
         else:
             return random.choice(unvisited_list)
 
+    def get_num_connections(self, row: int, col: int):
+        num_connections = 0
+        for i in range(1, 5):
+            if self.maze[(row, col, i)] == 2:
+                num_connections += 1
+        return num_connections
+
     def generate_blank_maze(self):
         # Generates a grid represented by a 3D matrix
         for row in range(0, self.num_rows):
@@ -165,6 +172,8 @@ class GenerateMaze:
             self.inebriated_stroll(*get_random_cell())
 
 
-maze = GenerateMaze(5, 5)
+
+
+maze = GenerateMaze(4, 4)
 maze.hunt_and_kill(True)
 print(maze.maze)
