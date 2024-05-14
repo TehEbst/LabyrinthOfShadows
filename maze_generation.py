@@ -165,6 +165,6 @@ class GenerateMaze:
             self.inebriated_stroll(*get_random_cell())
 
 
-maze = GenerateMaze(3, 3)
+maze = GenerateMaze(5, 5)
 maze.hunt_and_kill(True)
 print(maze.maze)
