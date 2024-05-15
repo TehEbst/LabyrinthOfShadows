@@ -4,6 +4,7 @@ This file contains the maze generation class
 
 import random
 import numpy as np
+import time
 
 NORTH, EAST, SOUTH, WEST = 1, 2, 3, 4
 
@@ -25,6 +26,11 @@ class GenerateMaze:
         self.num_rows = rows
         self.num_cols = cols
         self.maze = np.zeros([self.num_rows, self.num_cols, 5], int)
+        # To reduce number of loops, create a list that stores rows with
+        # unvisited cells and delete the row once all cells are visited
+        self.unvisited_rows = [x for x in range(0, self.num_rows)]
+        self.unvisited_cols = [y for y in range(0, self.num_cols)]
+        self.iterations = 0
 
     def mark_cell_visited(self, row: int, col: int):
         # 0 indicates no visit, and 1 means it has been visited
@@ -106,12 +112,41 @@ class GenerateMaze:
         else:
             return random.choice(unvisited_list)
 
-    def get_num_connections(self, row: int, col: int):
+    """def get_num_connections(self, row: int, col: int):
         num_connections = 0
         for i in range(1, 5):
             if self.maze[(row, col, i)] == 2:
                 num_connections += 1
-        return num_connections
+        return num_connections"""
+
+    def check_if_unvisited_cell_with_visited_neighbor(self, row: int, col: int):
+        """
+        This function first checks if current cell has been visited then checks if
+        a neighbor that has been visited exists
+        """
+        if self.maze[row, col, 0] != 0:
+            return False
+        for direction in range(1, 5):
+            n_coords = self.get_neighbor_coordinates(row, col, direction)
+            if n_coords is None:
+                continue
+            if self.maze[(*n_coords, 0)] == 1:
+                return direction
+        return False
+
+    def update_unvisited_axis(self):
+        row_removal = []
+        col_removal = []
+        for row in self.unvisited_rows:
+            if np.all(self.maze[row, :, 0] == 1):
+                row_removal.append(row)
+        for col in self.unvisited_cols:
+            if np.all(self.maze[:, col, 0] == 1):
+                col_removal.append(col)
+        for row in row_removal:
+            self.unvisited_rows.remove(row)
+        for col in col_removal:
+            self.unvisited_cols.remove(col)
 
     def generate_blank_maze(self):
         # Generates a grid represented by a 3D matrix
@@ -150,6 +185,28 @@ class GenerateMaze:
         unv_neighbor_coords = self.get_neighbor_coordinates(row, col, unv_neighbor)
         self.inebriated_stroll(*unv_neighbor_coords)
 
+    def maze_iteration(self):
+        if bool(random.getrandbits(1)):
+            for row in self.unvisited_rows:
+                if np.any(self.maze[row, :, 0] == 1):
+                    for col in self.unvisited_cols:
+                        hit = self.check_if_unvisited_cell_with_visited_neighbor(row, col)
+                        if hit is False:
+                            continue
+                        self.update_relation_state(row, col, hit, 2)
+                        self.inebriated_stroll(row, col)
+                        return
+        else:
+            for col in self.unvisited_cols:
+                if np.any(self.maze[:, col, 0] == 1):
+                    for row in self.unvisited_rows:
+                        hit = self.check_if_unvisited_cell_with_visited_neighbor(row, col)
+                        if hit is False:
+                            continue
+                        self.update_relation_state(row, col, hit, 2)
+                        self.inebriated_stroll(row, col)
+                        return
+
     def hunt_and_kill(self, start=False):
         """
         This function implements the hunt and kill algorithm to
@@ -167,13 +224,23 @@ class GenerateMaze:
             rand_col = random.randint(0, self.num_cols - 1)
             return rand_row, rand_col
 
+        # Start from a random cell
         if start:
             self.generate_blank_maze()
             self.inebriated_stroll(*get_random_cell())
+            self.iterations += 1
+
+        while True:
+            self.update_unvisited_axis()
+            if not self.unvisited_rows and not self.unvisited_cols:
+                return
+            self.iterations += 1
+            self.maze_iteration()
 
 
-
-
-maze = GenerateMaze(4, 4)
+"""start = time.time()
+maze = GenerateMaze(200, 200)
 maze.hunt_and_kill(True)
-print(maze.maze)
+print(maze.iterations)
+end = time.time()
+print(end - start)"""
