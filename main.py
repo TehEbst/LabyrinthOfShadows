@@ -1,16 +1,37 @@
-# This is a sample Python script.
+import pygame
+from maze_generation import GenerateMaze
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+NORTH, EAST, SOUTH, WEST = 1, 2, 3, 4
+DIRECTIONS = [NORTH, EAST, SOUTH, WEST]
+clrs = {"Elephant": (92, 75, 81),
+          "Blue": (140, 190, 178),
+          "Cream": (242, 235, 191),
+          "Orange": (243, 181, 98),
+          "Red": (240, 96, 96),
+          "White": (250, 250, 250),
+          "Black": (0, 0, 0)}
+
+# Initialize the pygame library
+pygame.init()
+
+# Set up the opening screen
+SCREEN = pygame.display.set_mode([500, 500])
+pygame.display.set_caption("Menu")
+
+def main_menu():
+    running = True
+    while running:
+        # Put the background
+        SCREEN.fill(clrs["Black"])
+        pygame.display.update()
+
+        # Event handler
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        # Update the display
+        pygame.display.update()
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+main_menu()

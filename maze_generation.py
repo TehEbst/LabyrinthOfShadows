@@ -4,9 +4,6 @@ This file contains the maze generation class
 
 import random
 import numpy as np
-import time
-
-NORTH, EAST, SOUTH, WEST = 1, 2, 3, 4
 
 
 class GenerateMaze:
@@ -236,11 +233,3 @@ class GenerateMaze:
                 return
             self.iterations += 1
             self.maze_iteration()
-
-
-"""start = time.time()
-maze = GenerateMaze(200, 200)
-maze.hunt_and_kill(True)
-print(maze.iterations)
-end = time.time()
-print(end - start)"""
